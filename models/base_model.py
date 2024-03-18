@@ -8,6 +8,7 @@ This module defines all common attributes/methods for other classes
 
 import uuid
 from datetime import datetime
+import models
 
 
 class BaseModel:
@@ -28,6 +29,7 @@ class BaseModel:
             self.id = str(uuid.uuid4())
             self.created_at = datetime.now()
             self.updated_at = datetime.now()
+            models.storage.new(self)
 
     def __str__(self):
         """String representation"""
@@ -36,6 +38,7 @@ class BaseModel:
     def save(self):
         """Updates updated_at with current time"""
         self.updated_at = datetime.now()
+        models.storage.save()
 
     def to_dict(self):
         """Returns a dict with all key/values of __dict__"""
