@@ -6,6 +6,7 @@ This module defines a class that serializes/deserializes
 
 """
 from models.base_model import BaseModel
+from models.user import User
 import json
 import os
 
