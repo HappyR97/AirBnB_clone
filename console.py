@@ -8,6 +8,7 @@ This module defines the command interpreter
 
 import cmd
 from models.base_model import BaseModel
+from models.user import User
 from models import storage
 
 
@@ -15,7 +16,7 @@ class HBNBCommand(cmd.Cmd):
     """commmand interpreter class"""
     prompt = '(hbnb) '
 
-    class_dict = {'BaseModel': BaseModel}
+    class_dict = {'BaseModel': BaseModel, 'User': User}
 
     def do_EOF(self, line):
         """End of file command to exit"""

@@ -37,8 +37,8 @@ class FileStorage:
             json.dump(obj_dict, file)
 
     def reload(self):
-        """Deserializes the JJSON file to __objects"""
-        classes = {'BaseModel': BaseModel}
+        """Deserializes the JSON file to __objects"""
+        classes = {'BaseModel': BaseModel, 'User': User}
         try:
             with open(self.__file_path, 'r') as file:
                 dictionnaries_obj = json.load(file)
