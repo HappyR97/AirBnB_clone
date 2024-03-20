@@ -87,6 +87,57 @@ class HBNBCommand(cmd.Cmd):
         del obj[key]
         storage.save()
 
+    def do_all(self, line):
+        """Prints all or specific str representation"""
+        args = line.split()
+        objs = storage.all()
+        if len(args) < 1:
+            for key, obj in objs.items():
+                print(f"{str(obj)}")
+            return
+        if args[0] not in self.class_dict:
+            print("** class doesn't exist **")
+        else:
+            for key, obj in objs.items():
+                if type(obj).__name__ == args[0]:
+                    print(str(obj))
+
+    def do_update(self, line):
+        """Updates instance"""
+        args = line.split()
+        objs = storage.all()
+        if len(args) == 0:
+            print("** class name missing **")
+            return
+        elif len(args) == 1:
+            print("** instance id missing **")
+            return
+        elif len(args) == 2:
+            print("** attribute name missing **")
+            return
+        elif len(args) == 3:
+            print("** value missing **")
+            return
+
+        class_name, instance_id, attr_name, attr_value = args[:4]
+        if class_name not in self.class_dict:
+            print("** class doesn't exist **")
+            return
+        key = f"{class_name}.{instance_id}"
+        if key not in objs:
+            print("** no instance found **")
+            return
+        instance = objs[key]
+
+        try:
+            attr_type = type(getattr(instance, attr_name))
+            attr_value = attr_type(attr_value)
+        except TypeError:
+            pass
+
+        setattr(instance, attr_name, attr_value)
+        instance.save()
+
 
 if __name__ == '__main__':
     HBNBCommand().cmdloop()
