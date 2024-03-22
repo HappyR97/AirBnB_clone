@@ -152,6 +152,33 @@ class HBNBCommand(cmd.Cmd):
         setattr(instance, attr_name, attr_value)
         instance.save()
 
+    def do_count(self, class_name):
+        """Prints the number of instances of a class"""
+        count = 0
+        for key in storage.all().keys():
+            if key.startswith(f"{class_name}."):
+                count += 1
+        print(count)
+
+    def default(self, line):
+        """Default behavior if command not found in do_..."""
+        if '.' in line:
+            args = line.split('.')
+            class_name = args[0]
+            command = args[1]
+
+            if class_name in self.class_dict:
+                if command.endswith('()'):
+                    action = command[:-2]
+                    if action == "all":
+                        self.do_all(class_name)
+                    elif action == "count":
+                        self.do_count(class_name)
+                    else:
+                        print("** Unknown method: {command} **")
+            else:
+                print("** class doesn't exist **")
+
 
 if __name__ == '__main__':
     HBNBCommand().cmdloop()
