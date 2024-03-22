@@ -175,7 +175,15 @@ class HBNBCommand(cmd.Cmd):
                     elif action == "count":
                         self.do_count(class_name)
                     else:
-                        print("** Unknown method: {command} **")
+                        print(f"** Unknown method: {command} **")
+                elif 'show' in command:
+                    instance_id = command.split(
+                            '(')[1].split(')')[0].replace('"', '')
+                    self.do_show(f"{class_name} {instance_id}")
+                elif 'destroy' in command:
+                    instance_id = command.split(
+                            '(')[1].split(')')[0].replace('"', '')
+                    self.do_destroy(f"{class_name} {instance_id}")
             else:
                 print("** class doesn't exist **")
 
