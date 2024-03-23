@@ -32,11 +32,11 @@ class HBNBCommand(cmd.Cmd):
             }
 
     def do_EOF(self, line):
-        """End of file command to exit"""
+        """EOF command to exit the program"""
         return True
 
     def do_quit(self, line):
-        """Quit command to exit"""
+        """Quit command to exit the program"""
         return True
 
     def emptyline(self):
@@ -44,7 +44,7 @@ class HBNBCommand(cmd.Cmd):
         pass
 
     def do_create(self, line):
-        """Creates a new instance of BaseModel and saves it"""
+        """Creates new instance"""
         if not line:
             print("** class name missing **")
             return
@@ -59,18 +59,21 @@ class HBNBCommand(cmd.Cmd):
         print(instance.id)
 
     def do_show(self, line):
-        """Prints str representation of instance"""
+        """Show command Prints the string representation"""
         args = line.split()
         if len(args) == 0:
             print("** class name missing **")
             return
-        if len(args) < 2:
-            print("** instance id missing **")
-            return
-        class_name, instance_id = args[0:2]
+
+        class_name = args[0]
         if class_name not in self.class_dict:
             print("** class doesn't exist **")
             return
+
+        if len(args) < 2:
+            print("** instance id missing **")
+            return
+        instance_id = args[1]
         obj = storage.all()
         key = f"{class_name}.{instance_id}"
         instance = obj.get(key, None)
@@ -81,18 +84,21 @@ class HBNBCommand(cmd.Cmd):
             print("** no instance found **")
 
     def do_destroy(self, line):
-        """Deletes an instance based on class and id"""
+        """Destroy command Deletes an instance"""
         args = line.split()
         if len(args) == 0:
             print("** class name missing **")
             return
-        if len(args) < 2:
-            print("** instance id missing **")
-            return
-        class_name, instance_id = args[0:2]
+
+        class_name = args[0]
         if class_name not in self.class_dict:
             print("** class doesn't exist **")
             return
+
+        if len(args) < 2:
+            print("** instance id missing **")
+            return
+        instance_id = args[1]
         obj = storage.all()
         key = f"{class_name}.{instance_id}"
         if key not in obj:
@@ -102,7 +108,7 @@ class HBNBCommand(cmd.Cmd):
         storage.save()
 
     def do_all(self, line):
-        """Prints all or specific str representation"""
+        """all command Prints all string representation"""
         args = line.split()
         objs = storage.all()
         if len(args) < 1:
@@ -117,7 +123,7 @@ class HBNBCommand(cmd.Cmd):
                     print(str(obj))
 
     def do_count(self, class_name):
-        """Prints the number of instances of a class"""
+        """Count command counts all instances"""
         count = 0
         for key in storage.all().keys():
             if key.startswith(f"{class_name}."):
@@ -125,29 +131,28 @@ class HBNBCommand(cmd.Cmd):
         print(count)
 
     def do_update(self, line):
-        """Updates instance"""
+        """Update command reloads an instance"""
         args = line.split()
         if len(args) == 0:
             print("** class name missing **")
             return
-        elif len(args) == 1:
-            print("** instance id missing **")
-            return
-        elif len(args) == 2:
-            print("** attribute name missing **")
-            return
-        elif len(args) == 3:
-            print("** value missing **")
-            return
-
         class_name = args[0]
-        instance_id = args[1].strip('"')
-        attr_name = args[2].strip("'\"")
-        attr_value = args[3].strip('"')
-
         if class_name not in self.class_dict:
             print("** class doesn't exist **")
             return
+        if len(args) == 1:
+            print("** instance id missing **")
+            return
+        if len(args) == 2:
+            print("** attribute name missing **")
+            return
+        if len(args) == 3:
+            print("** value missing **")
+            return
+
+        instance_id = args[1].strip('"')
+        attr_name = args[2].strip("'\"")
+        attr_value = args[3].strip('"')
         key = f"{class_name}.{instance_id}"
         objs = storage.all()
         if key not in objs:
@@ -172,22 +177,30 @@ class HBNBCommand(cmd.Cmd):
             command = args[1]
 
             if class_name in self.class_dict:
-                if command.endswith('()'):
+                if 'destroy' in command:
+                    instance_id = command.split(
+                            '(')[1].split(')')[0].replace('"', '')
+                    if not instance_id:
+                        print("** instance id missing **")
+                    else:
+                        self.do_destroy(f"{class_name} {instance_id}")
+                elif 'show' in command:
+                    instance_id = command.split(
+                            '(')[1].split(')')[0].replace('"', '')
+                    if not instance_id:
+                        print("** instance id missing **")
+                    else:
+                        self.do_show(f"{class_name} {instance_id}")
+                elif command.endswith('()'):
                     action = command[:-2]
                     if action == "all":
                         self.do_all(class_name)
                     elif action == "count":
                         self.do_count(class_name)
+                    elif action == "destroy":
+                        self.destroy(class_name)
                     else:
                         print(f"** Unknown method: {command} **")
-                elif 'show' in command:
-                    instance_id = command.split(
-                            '(')[1].split(')')[0].replace('"', '')
-                    self.do_show(f"{class_name} {instance_id}")
-                elif 'destroy' in command:
-                    instance_id = command.split(
-                            '(')[1].split(')')[0].replace('"', '')
-                    self.do_destroy(f"{class_name} {instance_id}")
                 elif 'update' in command:
                     update_args = command.split('(')[1].split(')')[0] \
                             .split(', ')

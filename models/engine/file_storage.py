@@ -29,9 +29,10 @@ class FileStorage:
 
     def new(self, obj):
         """Setter for __objects"""
-        if obj:
-            key = f"{obj.__class__.__name__}.{obj.id}"
-            self.__objects[key] = obj
+        if obj is None:
+            raise AttributeError("obj cannot be None")
+        key = f"{obj.__class__.__name__}.{obj.id}"
+        self.__objects[key] = obj
 
     def save(self):
         """Serializes __objects to JSON file"""
@@ -55,8 +56,8 @@ class FileStorage:
             }
         try:
             with open(self.__file_path, 'r') as file:
-                dictionnaries_obj = json.load(file)
-                for key, obj in dictionnaries_obj.items():
+                dictionaries_obj = json.load(file)
+                for key, obj in dictionaries_obj.items():
                     class_name, instance_id = key.split('.')
                     cls = classes[class_name]
                     self.__objects[key] = cls(**obj)
