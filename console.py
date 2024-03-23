@@ -116,10 +116,17 @@ class HBNBCommand(cmd.Cmd):
                 if type(obj).__name__ == args[0]:
                     print(str(obj))
 
+    def do_count(self, class_name):
+        """Prints the number of instances of a class"""
+        count = 0
+        for key in storage.all().keys():
+            if key.startswith(f"{class_name}."):
+                count += 1
+        print(count)
+
     def do_update(self, line):
         """Updates instance"""
         args = line.split()
-        objs = storage.all()
         if len(args) == 0:
             print("** class name missing **")
             return
@@ -133,32 +140,29 @@ class HBNBCommand(cmd.Cmd):
             print("** value missing **")
             return
 
-        class_name, instance_id, attr_name, attr_value = args[:4]
+        class_name = args[0]
+        instance_id = args[1].strip('"')
+        attr_name = args[2].strip("'\"")
+        attr_value = args[3].strip('"')
+
         if class_name not in self.class_dict:
             print("** class doesn't exist **")
             return
         key = f"{class_name}.{instance_id}"
+        objs = storage.all()
         if key not in objs:
             print("** no instance found **")
             return
         instance = objs[key]
 
         try:
-            attr_type = type(getattr(instance, attr_name))
+            attr_type = type(getattr(instance, attr_name, str))
             attr_value = attr_type(attr_value)
         except TypeError:
             pass
 
         setattr(instance, attr_name, attr_value)
         instance.save()
-
-    def do_count(self, class_name):
-        """Prints the number of instances of a class"""
-        count = 0
-        for key in storage.all().keys():
-            if key.startswith(f"{class_name}."):
-                count += 1
-        print(count)
 
     def default(self, line):
         """Default behavior if command not found in do_..."""
@@ -184,6 +188,21 @@ class HBNBCommand(cmd.Cmd):
                     instance_id = command.split(
                             '(')[1].split(')')[0].replace('"', '')
                     self.do_destroy(f"{class_name} {instance_id}")
+                elif 'update' in command:
+                    update_args = command.split('(')[1].split(')')[0] \
+                            .split(', ')
+                    if len(update_args) < 3:
+                        print("** Incorrect number of arguments for update **")
+                        return
+
+                    instance_id = update_args[0].strip('"')
+                    attr_name = update_args[1].strip().replace('"', '')
+                    attr_value = update_args[2].strip().replace('"', '')
+                    update_line = f"{class_name} {instance_id} \
+                            {attr_name} {attr_value}"
+                    self.do_update(update_line)
+                else:
+                    print(f"** Unknown command: {command} **")
             else:
                 print("** class doesn't exist **")
 
