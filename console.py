@@ -152,19 +152,15 @@ class HBNBCommand(cmd.Cmd):
 
         instance_id = args[1].strip('"')
         attr_name = args[2].strip("'\"")
-        attr_value = args[3].strip('"')
+        attr_value = args[3].strip("'\"")
         key = f"{class_name}.{instance_id}"
-        objs = storage.all()
-        if key not in objs:
+        if key not in storage.all():
             print("** no instance found **")
             return
-        instance = objs[key]
-
-        try:
-            attr_type = type(getattr(instance, attr_name, str))
+        instance = storage.all()[key]
+        if hasattr(instance, attr_name):
+            attr_type = type(getattr(instance, attr_name))
             attr_value = attr_type(attr_value)
-        except TypeError:
-            pass
 
         setattr(instance, attr_name, attr_value)
         instance.save()
