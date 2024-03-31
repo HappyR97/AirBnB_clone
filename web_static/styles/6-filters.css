@@ -32,14 +32,14 @@
   margin-right: 0;
 }
 
-.amenities {
+.filters .amenities {
   height: 100%;
   width: 25%;
   margin-right: auto;
 }
 
 .locations h3,
-.amenities h3 {
+.filters .amenities h3 {
   font-weight: 600;
   margin-bottom: 0;
   margin-left: 15%;
@@ -47,7 +47,7 @@
 }
 
 .locations h4,
-.amenities h4 {
+.filters .amenities h4 {
   font-weight: 400;
   font-size: 14px;
   margin-top: 0;
@@ -68,7 +68,7 @@
   display: block;
 }
 
-.amenities:hover .popover {
+.filters .amenities:hover .popover {
   display: block;
 }
 
